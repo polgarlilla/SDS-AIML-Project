@@ -22,9 +22,28 @@ X, y = preprocess_data(df, cols_to_keep, qualification_map, categoricals)
 ######################################################################################################
 
 #Descriptive statistics
-from descriptive_stats import summarize_features_and_target
+from descriptive_stats import (
+    plot_dummy_histograms,
+    summarize_features_and_target,
+    plot_target_distribution,
+    plot_numeric_histogram,
+    plot_boxplot_two_features,
+    plot_parental_qualification_distribution,
+    dummy_cols,
+    plot_dummy_histograms,
+)
+
 summary_features, summary_target = summarize_features_and_target(X, y)
 summary_features, summary_target
+
+plot_target_distribution(y)
+plot_numeric_histogram(X,column="Previous qualification (grade)")
+plot_boxplot_two_features(X, "Inflation rate", "GDP")
+plot_parental_qualification_distribution(X,mother_col="Mother's qualification",
+    father_col="Father's qualification",levels=(0, 1, 2, 3, 4),)
+plot_dummy_histograms(X, dummy_cols)
+
+
 
 ######################################################################################################
 

@@ -43,6 +43,149 @@ def summarize_features_and_target(X, y):
     return summary_features, summary_target
 
 
+def plot_target_distribution(
+    y,
+    title="Dropout vs Graduate proportion (Target)"):
+    """
+    Plots the class proportion of the target variable.
+    """
+    target_ratio = y.value_counts(normalize=True) * 100
+
+    plt.figure()
+    target_ratio.plot(kind="bar")
+    plt.title(title)
+    plt.ylabel("Percentage (%)")
+    plt.xlabel("Target class")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_numeric_histogram(
+    X,
+    column,
+    bins=30,
+    title=None,
+    xlabel=None
+):
+    """
+    Plots a histogram
+
+    """
+    if column not in X.columns:
+        raise ValueError(f"Column '{column}' not found in X.")
+
+    data = X[column].dropna()
+
+    if title is None:
+        title = f"Histogram of {column}"
+    if xlabel is None:
+        xlabel = column
+
+    plt.figure()
+    data.hist(bins=bins)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel("Frequency")
+    plt.tight_layout()
+    plt.show()
+
+
+
+def plot_boxplot_two_features(
+    X,
+    col1,
+    col2,
+    title=None,
+    ylabel="Value"
+):
+    """
+    Plot side-by-side boxplots
+
+    """
+    if col1 not in X.columns:
+        raise ValueError(f"Column '{col1}' not found in X.")
+    if col2 not in X.columns:
+        raise ValueError(f"Column '{col2}' not found in X.")
+
+    if title is None:
+        title = f"Boxplot of {col1} and {col2}"
+
+    plt.figure()
+    plt.boxplot(
+        [X[col1].dropna(), X[col2].dropna()],
+        labels=[col1, col2]
+    )
+    plt.title(title)
+    plt.ylabel(ylabel)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_parental_qualification_distribution(
+    X,
+    mother_col="Mother's qualification",
+    father_col="Father's qualification",
+    levels=(0, 1, 2, 3, 4),
+    title="Distribution of parental qualification levels"
+):
+    """
+    Plot grouped bar chart of parental qualification level proportions.
+
+    """
+    for col in [mother_col, father_col]:
+        if col not in X.columns:
+            raise ValueError(f"Column '{col}' not found in X.")
+
+    mother_prop = X[mother_col].value_counts(normalize=True).sort_index()
+    father_prop = X[father_col].value_counts(normalize=True).sort_index()
+
+    qual_prop = pd.DataFrame({
+        "Mother": mother_prop,
+        "Father": father_prop
+    })
+
+    qual_prop = qual_prop.reindex(list(levels))
+
+    ax = qual_prop.plot(kind="bar")
+    ax.set_title(title)
+    ax.set_xlabel("Qualification level")
+    ax.set_ylabel("Proportion")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.show()
+
+dummy_cols = [
+    "International",
+    "Scholarship holder",
+    "Gender",
+    "Tuition fees up to date",
+    "Debtor",
+]
+
+def plot_dummy_histograms(X,dummy_cols):
+    """
+    Plot histograms for multiple 0/1 dummy variables.
+    """
+    for col in dummy_cols:
+        if col not in X.columns:
+            raise ValueError(f"Dummy column '{col}' not found in X.")
+
+        plt.figure()
+        data = X[col].dropna()
+        data = data[data.isin([0, 1])]
+
+        plt.hist(data, bins=[-0.5, 0.5, 1.5])
+        plt.xticks([0, 1], ["0", "1"])
+        plt.title(f"Histogram of {col}")
+        plt.xlabel(col)
+        plt.ylabel("Count")
+        plt.tight_layout()
+        plt.show()
+
+
+
+
 def multicollinearity_corr_heatmap(df):
 
   """
