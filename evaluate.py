@@ -22,7 +22,7 @@ def evaluate_model(model, X, y):
     - Confusion matrix and ROC curve from an 80/20 train-test split.
     """
 
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=3)
 
     scoring_metrics = {
         "roc_auc": "AUC",
@@ -46,7 +46,7 @@ def evaluate_model(model, X, y):
         X,
         y,
         test_size=0.20,
-        random_state=42,
+        random_state=3,
         stratify=y,
     )
 

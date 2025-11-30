@@ -11,13 +11,13 @@ def lin_reg_model(preprocess, X, y):
     """
     preprocess = preprocess
     # Logistic regression baseline (no hyperparameter tuning)
-    log_reg = LogisticRegression(max_iter=100, random_state=42)
+    log_reg = LogisticRegression(max_iter=100, random_state=3)
 
     # Pipeline: preprocess -> logistic regression
     model = make_pipeline(preprocess, log_reg)
 
     # 5-fold stratified CV for predictions
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=3)
 
     # Out-of-fold predictions (each point predicted by a model
     # that did not see it during training)
@@ -45,7 +45,7 @@ def lasso_model(preprocess, X, y):
 
     model = make_pipeline(preprocess, log_reg_l1)
 
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=3)
 
     y_pred_cv = cross_val_predict(model, X, y, cv=cv, method="predict")
 
@@ -75,7 +75,7 @@ def knn_model(preprocess, X, y, cv_splits=5):
     }
 
     # Stratified 5-fold CV
-    cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=42)
+    cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=3)
 
     # Grid search over n_neighbors
     grid_search = GridSearchCV(
@@ -111,7 +111,7 @@ def decision_tree_model(preprocess,X, y):
     # Base decision tree classifier
     tree_clf = DecisionTreeClassifier(
         criterion="entropy",
-        random_state=42
+        random_state=3
     )
 
     # Pipeline: preprocess -> decision tree
@@ -124,7 +124,7 @@ def decision_tree_model(preprocess,X, y):
     }
 
     # Stratified 5-fold CV
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=3)
 
     # Grid search
     grid_search = GridSearchCV(

@@ -1,5 +1,6 @@
 '''
 This script contains the main workflow for data loading, preprocessing, modeling, and evaluation.
+Random state is set to 3 everywhere.
 '''
 
 #Data loading and preprocessing
