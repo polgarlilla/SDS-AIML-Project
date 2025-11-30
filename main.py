@@ -36,3 +36,7 @@ evaluate.evaluate_model(model_baseline, X, y)
 #Lasso model
 model_lasso, y_pred_cv_lasso = models_proba.lasso_model(preprocess, X, y)
 evaluate.evaluate_model(model_lasso, X, y)
+
+#KNN
+model_knn, y_pred_cv_knn, grid_search_knn = models_proba.knn_model(preprocess, X, y)
+evaluate.evaluate_model(model_knn, X, y)
