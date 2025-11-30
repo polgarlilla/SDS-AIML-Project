@@ -1,4 +1,8 @@
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+import statsmodels.api as sm
 
 def summarize_features_and_target(X, y):
     """
@@ -37,3 +41,34 @@ def summarize_features_and_target(X, y):
     summary_target[num_cols_t] = summary_target[num_cols_t].round(3)
 
     return summary_features, summary_target
+
+
+def multicollinearity_corr_heatmap(df):
+
+  """
+  Computes the correlation matrix for all numeric columns
+  in the DataFrame and plots a correlation heatmap.
+  """
+  corr = df.corr()
+  plt.figure(figsize=(12, 8))
+  sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
+  plt.title("Correlation Heatmap")
+  plt.show()
+
+    
+def multicollinearity_vif(df):
+
+  """
+  Computes the VIF for all numeric columns
+  """
+  X = df.select_dtypes(include=["float64", "int64", "int8"]).dropna()
+
+  X_const = sm.add_constant(X)
+
+  vif_df = pd.DataFrame()
+  vif_df["feature"] = X.columns
+  vif_df["VIF"] = [variance_inflation_factor(X_const.values, i+1)
+                  for i in range(len(X.columns))]
+
+  print(vif_df)
+  return vif_df

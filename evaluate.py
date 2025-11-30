@@ -9,7 +9,10 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
     RocCurveDisplay,
     roc_auc_score,
-)
+    accuracy_score,
+    precision_score,
+    recall_score,
+    roc_auc_score)
 
 
 def evaluate_model(model, X, y):
@@ -88,3 +91,39 @@ def evaluate_model(model, X, y):
     plt.show()
 
     return metrics_cv
+
+
+
+
+def evaluation_on_holdout(model, X_holdout, y_holdout):
+    """
+    Evaluates a trained model on the holdout set.
+
+    """
+    y_pred = model.predict(X_holdout)
+    y_proba = model.predict_proba(X_holdout)[:, 1]
+
+    auc = roc_auc_score(y_holdout, y_proba)
+    acc = accuracy_score(y_holdout, y_pred)
+    prec = precision_score(y_holdout, y_pred)
+    rec = recall_score(y_holdout, y_pred)
+
+    print("\n=== FINAL HOLDOUT SET PERFORMANCE ===")
+    print(f"AUC:        {auc:.3f}")
+    print(f"Accuracy:   {acc:.3f}")
+    print(f"Precision:  {prec:.3f}")
+    print(f"Recall:     {rec:.3f}")
+
+    # Confusion matrix
+    cm = confusion_matrix(y_holdout, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+    disp.plot()
+    plt.title("Confusion Matrix (Holdout Set)")
+    plt.show()
+
+    return {
+        "auc": auc,
+        "accuracy": acc,
+        "precision": prec,
+        "recall": rec,
+    }
