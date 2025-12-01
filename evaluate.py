@@ -2,6 +2,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+import os
+import json
+import pandas as pd
 
 from sklearn.model_selection import StratifiedKFold, train_test_split, cross_val_score
 from sklearn.metrics import (
@@ -14,13 +17,24 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score)
 
+def _safe_model_name(model_name: str) -> str:
+    """Convert model name to a safe file-name fragment."""
+    return (
+        model_name.lower()
+        .replace(" ", "_")
+        .replace("-", "_")
+        .replace("/", "_")
+    )
 
-def evaluate_model(model, X, y):
+def evaluate_model(model, X, y, model_name="Model", output_dir="outputs"):
     """
     Evaluates a model:
     - 5-fold cross-validated AUC, accuracy, precision, recall
     - Confusion matrix and ROC curve from an 80/20 train-test split.
+    - Saves outputs
     """
+    os.makedirs(output_dir, exist_ok=True)
+    safe_name = _safe_model_name(model_name)
 
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=3)
 
@@ -33,13 +47,25 @@ def evaluate_model(model, X, y):
 
     metrics_cv = {}
 
-    print("\n=== 5-fold cross-validated metrics ===")
+    print(f"\n=== 5-fold cross-validated metrics for {model_name} ===")
     for scoring, nice_name in scoring_metrics.items():
         scores = cross_val_score(model, X, y, cv=cv, scoring=scoring)
         mean_score = scores.mean()
         std_score = scores.std()
-        metrics_cv[nice_name.lower()] = {"mean": mean_score, "std": std_score}
+        metrics_cv[nice_name.lower()] = {
+            "mean": float(mean_score),
+            "std": float(std_score),
+        }
         print(f"{nice_name} (CV mean ± std): {mean_score:.3f} ± {std_score:.3f}")
+
+    # save CV metrics
+    metrics_json_path = os.path.join(output_dir, f"{safe_name}_cv_metrics.json")
+    with open(metrics_json_path, "w") as f:
+        json.dump(metrics_cv, f, indent=4)
+
+    metrics_df = pd.DataFrame(metrics_cv).T
+    metrics_csv_path = os.path.join(output_dir, f"{safe_name}_cv_metrics.csv")
+    metrics_df.to_csv(metrics_csv_path)
 
     # 80/20 train-test split for visualizations
     X_train, X_test, y_train, y_test = train_test_split(
@@ -77,29 +103,36 @@ def evaluate_model(model, X, y):
     ax.set_yticks(range(n))
     ax.set_xticklabels([f"Pred {l}" for l in labels])
     ax.set_yticklabels([f"True {l}" for l in labels])
-    ax.set_title("Confusion matrix (80/20 split)")
+    ax.set_title(f"Confusion matrix (80/20 split) - {model_name}")
     ax.set_xlim(-0.5, n - 0.5)
     ax.set_ylim(n - 0.5, -0.5)
     plt.tight_layout()
+
+    cm_path = os.path.join(output_dir, f"{safe_name}_cm_8020.png")
+    fig.savefig(cm_path, dpi=300, bbox_inches="tight")   # <– use fig
+
     plt.show()
 
     # ROC curve + AUC
     auc_test = roc_auc_score(y_test, y_proba)
     fig, ax = plt.subplots()
     RocCurveDisplay.from_predictions(y_test, y_proba, ax=ax)
-    ax.set_title(f"ROC curve (AUC on test = {auc_test:.3f})")
+    ax.set_title(f"ROC curve - {model_name} (AUC on test = {auc_test:.3f})")
+
+    roc_path = os.path.join(output_dir, f"{safe_name}_roc_8020.png")
+    fig.savefig(roc_path, dpi=300, bbox_inches="tight")  # <– use fig
+
     plt.show()
 
     return metrics_cv
 
 
+def evaluation_on_holdout(model, X_holdout, y_holdout,
+                          model_name="Model", output_dir="outputs"):
 
+    os.makedirs(output_dir, exist_ok=True)
+    safe_name = _safe_model_name(model_name)
 
-def evaluation_on_holdout(model, X_holdout, y_holdout):
-    """
-    Evaluates a trained model on the holdout set.
-
-    """
     y_pred = model.predict(X_holdout)
     y_proba = model.predict_proba(X_holdout)[:, 1]
 
@@ -114,16 +147,31 @@ def evaluation_on_holdout(model, X_holdout, y_holdout):
     print(f"Precision:  {prec:.3f}")
     print(f"Recall:     {rec:.3f}")
 
-    # Confusion matrix
+    metrics_holdout = {
+        "auc": float(auc),
+        "accuracy": float(acc),
+        "precision": float(prec),
+        "recall": float(rec),
+    }
+
+    json_path = os.path.join(output_dir, f"{safe_name}_holdout_metrics.json")
+    csv_path = os.path.join(output_dir, f"{safe_name}_holdout_metrics.csv")
+
+    with open(json_path, "w") as f:
+        json.dump(metrics_holdout, f, indent=4)
+
+    pd.DataFrame([metrics_holdout]).to_csv(csv_path, index=False)
+
     cm = confusion_matrix(y_holdout, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    disp.plot()
-    plt.title("Confusion Matrix (Holdout Set)")
+
+    fig, ax = plt.subplots()
+    disp.plot(ax=ax, colorbar=False)
+    ax.set_title(f"Confusion Matrix (Holdout) - {model_name}")
+
+    cm_path = os.path.join(output_dir, f"{safe_name}_cm_holdout.png")
+    fig.savefig(cm_path, dpi=300, bbox_inches="tight")
+
     plt.show()
 
-    return {
-        "auc": auc,
-        "accuracy": acc,
-        "precision": prec,
-        "recall": rec,
-    }
+    return metrics_holdout

@@ -55,25 +55,25 @@ preprocess = preprocessor_for_modeling()
 
 ######################################################################################################
 
-#Models
-#Linear regression (baseline model)
+# Models
 import models
-model_baseline, y_pred_cv_baseline = models.lin_reg_model(preprocess,X, y)
+from evaluate import evaluate_model, evaluation_on_holdout
 
-import evaluate
-evaluate.evaluate_model(model_baseline, X, y)
+# Linear regression (baseline model)
+model_baseline, y_pred_cv_baseline = models.lin_reg_model(preprocess, X, y)
+evaluate_model(model_baseline, X, y, model_name="Baseline Logistic Regression")
 
-#Lasso model
+# Lasso model
 model_lasso, y_pred_cv_lasso = models.lasso_model(preprocess, X, y)
-evaluate.evaluate_model(model_lasso, X, y)
+evaluate_model(model_lasso, X, y, model_name="Lasso Logistic Regression")
 
-#KNN
+# KNN
 model_knn, y_pred_cv_knn, grid_search_knn = models.knn_model(preprocess, X, y)
-evaluate.evaluate_model(model_knn, X, y)
+evaluate_model(model_knn, X, y, model_name="KNN Classifier")
 
-#Decision Tree
+# Decision Tree
 model_tree, y_pred_cv_tree, grid_search_tree = models.decision_tree_model(preprocess, X, y)
-evaluate.evaluate_model(model_tree, X, y)
+evaluate_model(model_tree, X, y, model_name="Decision Tree Classifier")
 
 ######################################################################################################
 
@@ -90,17 +90,16 @@ multicollinearity_vif(X)
 #Final evaluation on holdout set
 X_holdout, y_holdout = preprocess_data(df_holdout, cols_to_keep, qualification_map, categoricals)
 
-from evaluation import evaluation_on_holdout
-
 print("\n=== BASELINE MODEL (Holdout) ===")
-evaluation_on_holdout(model_baseline, X_holdout, y_holdout)
+evaluation_on_holdout(model_baseline, X_holdout, y_holdout,model_name="Baseline Logistic Regression")
 
 print("\n=== LASSO MODEL (Holdout) ===")
-evaluation_on_holdout(model_lasso, X_holdout, y_holdout)
+evaluation_on_holdout(model_lasso, X_holdout, y_holdout,model_name="Lasso Logistic Regression")
 
 print("\n=== KNN MODEL (Holdout) ===")
-evaluation_on_holdout(model_knn, X_holdout, y_holdout)
+evaluation_on_holdout(model_knn, X_holdout, y_holdout,model_name="KNN Classifier")
+
 
 print("\n=== DECISION TREE MODEL (Holdout) ===")
-evaluation_on_holdout(model_tree, X_holdout, y_holdout)
+evaluation_on_holdout(model_tree, X_holdout, y_holdout,model_name="Decision Tree Classifier")
 #based on accuracy, the decision tree performs best on the holdout set
