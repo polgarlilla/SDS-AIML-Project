@@ -58,6 +58,7 @@ preprocess = preprocessor_for_modeling()
 # Models
 import models
 from evaluate import evaluate_model, evaluation_on_holdout
+#We used 80-20 train-test splits to visualize confusion matrices and  ROC curves
 
 # Linear regression (baseline model)
 model_baseline, y_pred_cv_baseline = models.lin_reg_model(preprocess, X, y)
