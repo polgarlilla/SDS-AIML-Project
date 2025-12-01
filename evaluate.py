@@ -167,7 +167,7 @@ def evaluation_on_holdout(model, X_holdout, y_holdout,
 
     n = cm.shape[0]
     correct_mask = np.eye(n)
-    cmap = ListedColormap(['#d65469', '#54d676'])
+    cmap = ListedColormap(['#912dcf', '#e0d609'])
 
     fig, ax = plt.subplots(figsize=(5, 4))
     ax.imshow(correct_mask, cmap=cmap, vmin=0, vmax=1)

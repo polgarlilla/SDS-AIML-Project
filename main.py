@@ -44,7 +44,6 @@ plot_parental_qualification_distribution(X,mother_col="Mother's qualification",
 plot_dummy_histograms(X, dummy_cols)
 
 
-
 ######################################################################################################
 
 #Data preprocessing for modeling: 
