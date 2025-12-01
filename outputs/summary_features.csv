@@ -1,0 +1,11 @@
+,dtype,nunique,missing_count,count,unique,top,freq,mean,std,min,25%,50%,75%,max
+Previous qualification (grade),float64,99,0,3267.0,,,,132.967,13.267,95.0,125.0,133.1,140.0,190.0
+Mother's qualification,category,5,0,3267.0,5.0,2.0,2712.0,,,,,,,
+Father's qualification,category,5,0,3267.0,5.0,2.0,2848.0,,,,,,,
+Debtor,category,2,0,3267.0,2.0,0.0,2892.0,,,,,,,
+Tuition fees up to date,category,2,0,3267.0,2.0,1.0,2838.0,,,,,,,
+Gender,category,2,0,3267.0,2.0,0.0,2140.0,,,,,,,
+Scholarship holder,category,2,0,3267.0,2.0,0.0,2399.0,,,,,,,
+International,category,2,0,3267.0,2.0,0.0,3191.0,,,,,,,
+Inflation rate,float64,9,0,3267.0,,,,1.221,1.384,-0.8,0.3,1.4,2.6,3.7
+GDP,float64,10,0,3267.0,,,,-0.001,2.258,-4.06,-1.7,0.32,1.79,3.51
