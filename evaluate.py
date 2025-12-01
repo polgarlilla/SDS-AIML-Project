@@ -162,12 +162,30 @@ def evaluation_on_holdout(model, X_holdout, y_holdout,
 
     pd.DataFrame([metrics_holdout]).to_csv(csv_path, index=False)
 
-    cm = confusion_matrix(y_holdout, y_pred)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+    labels = [0, 1]
+    cm = confusion_matrix(y_holdout, y_pred, labels=labels)
 
-    fig, ax = plt.subplots()
-    disp.plot(ax=ax, colorbar=False)
+    n = cm.shape[0]
+    correct_mask = np.eye(n)
+    cmap = ListedColormap(['#d65469', '#54d676'])
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+    ax.imshow(correct_mask, cmap=cmap, vmin=0, vmax=1)
+
+    cm_norm = cm / cm.sum(axis=1, keepdims=True)
+    for (i, j), val in np.ndenumerate(cm):
+        txt = f"{val}\n({cm_norm[i, j]:.2f})"
+        ax.text(j, i, txt, ha="center", va="center",
+                color="white", fontsize=12, fontweight="bold")
+
+    ax.set_xticks(range(n))
+    ax.set_yticks(range(n))
+    ax.set_xticklabels([f"Pred {l}" for l in labels])
+    ax.set_yticklabels([f"True {l}" for l in labels])
     ax.set_title(f"Confusion Matrix (Holdout) - {model_name}")
+    ax.set_xlim(-0.5, n - 0.5)
+    ax.set_ylim(n - 0.5, -0.5)
+    plt.tight_layout()
 
     cm_path = os.path.join(output_dir, f"{safe_name}_cm_holdout.png")
     fig.savefig(cm_path, dpi=300, bbox_inches="tight")

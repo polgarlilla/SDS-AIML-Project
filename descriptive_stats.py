@@ -49,19 +49,26 @@ def summarize_features_and_target(X, y, output_dir="outputs"):
 
 def plot_target_distribution(y,title="Dropout vs Graduate proportion (Target)",output_dir="outputs"):
     """
-    Plots the class proportion of the target variable.
+    Plots the class proportion of the target variable
     """
+    os.makedirs(output_dir, exist_ok=True)
+
     target_ratio = y.value_counts(normalize=True) * 100
 
-    plt.figure()
-    target_ratio.plot(kind="bar")
-    plt.title(title)
-    plt.ylabel("Percentage (%)")
-    plt.xlabel("Target class")
-    plt.xticks(rotation=0)
+    fig, ax = plt.subplots()
+    target_ratio.plot(kind="bar", ax=ax)
+    ax.set_title(title)
+    ax.set_ylabel("Percentage (%)")
+    ax.set_xlabel("Target class")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
     plt.tight_layout()
-    fig.savefig(os.path.join(output_dir, "target_distribution.png"),
-                dpi=300, bbox_inches="tight")
+
+    fig.savefig(
+        os.path.join(output_dir, "target_distribution.png"),
+        dpi=300,
+        bbox_inches="tight"
+    )
+
     plt.show()
 
 
@@ -176,19 +183,26 @@ def plot_dummy_histograms(X,dummy_cols):
 
 
 
-def multicollinearity_corr_heatmap(df,output_dir="outputs"):
+def multicollinearity_corr_heatmap(df, output_dir="outputs"):
+    """
+    Computes the correlation matrix for all numeric columns
+    """
 
-  """
-  Computes the correlation matrix for all numeric columns
-  in the DataFrame and plots a correlation heatmap.
-  """
-  corr = df.corr()
-  plt.figure(figsize=(12, 8))
-  sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
-  plt.title("Correlation Heatmap")
-  fig.savefig(os.path.join(output_dir, "correlation_heatmap.png"),
-                dpi=300, bbox_inches="tight")
-  plt.show()
+    os.makedirs(output_dir, exist_ok=True)
+
+    corr = df.corr()
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
+    ax.set_title("Correlation Heatmap")
+    plt.tight_layout()
+
+    fig.savefig(
+        os.path.join(output_dir, "correlation_heatmap.png"),
+        dpi=300,
+        bbox_inches="tight"
+    )
+    plt.show()
 
     
 def multicollinearity_vif(df):
