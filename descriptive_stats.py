@@ -3,8 +3,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import statsmodels.api as sm
+import os
 
-def summarize_features_and_target(X, y):
+def summarize_features_and_target(X, y, output_dir="outputs"):
     """
     Generates descriptive statistics tables for features (X) and target (y).
     Returns two DataFrames: summary of features,ó and summary of target
@@ -40,12 +41,13 @@ def summarize_features_and_target(X, y):
     num_cols_t = summary_target.select_dtypes(include="number").columns
     summary_target[num_cols_t] = summary_target[num_cols_t].round(3)
 
+    summary_features.to_csv(os.path.join(output_dir, "summary_features.csv"))
+    summary_target.to_csv(os.path.join(output_dir, "summary_target.csv"))
+
     return summary_features, summary_target
 
 
-def plot_target_distribution(
-    y,
-    title="Dropout vs Graduate proportion (Target)"):
+def plot_target_distribution(y,title="Dropout vs Graduate proportion (Target)",output_dir="outputs"):
     """
     Plots the class proportion of the target variable.
     """
@@ -58,16 +60,12 @@ def plot_target_distribution(
     plt.xlabel("Target class")
     plt.xticks(rotation=0)
     plt.tight_layout()
+    fig.savefig(os.path.join(output_dir, "target_distribution.png"),
+                dpi=300, bbox_inches="tight")
     plt.show()
 
 
-def plot_numeric_histogram(
-    X,
-    column,
-    bins=30,
-    title=None,
-    xlabel=None
-):
+def plot_numeric_histogram(X,column,bins=30,title=None,xlabel=None,):
     """
     Plots a histogram
 
@@ -92,16 +90,9 @@ def plot_numeric_histogram(
 
 
 
-def plot_boxplot_two_features(
-    X,
-    col1,
-    col2,
-    title=None,
-    ylabel="Value"
-):
+def plot_boxplot_two_features(X,col1,col2,title=None,ylabel="Value"):
     """
     Plot side-by-side boxplots
-
     """
     if col1 not in X.columns:
         raise ValueError(f"Column '{col1}' not found in X.")
@@ -122,13 +113,10 @@ def plot_boxplot_two_features(
     plt.show()
 
 
-def plot_parental_qualification_distribution(
-    X,
+def plot_parental_qualification_distribution(X,
     mother_col="Mother's qualification",
     father_col="Father's qualification",
-    levels=(0, 1, 2, 3, 4),
-    title="Distribution of parental qualification levels"
-):
+    levels=(0, 1, 2, 3, 4),title="Distribution of parental qualification levels"):
     """
     Plot grouped bar chart of parental qualification level proportions.
 
@@ -163,6 +151,8 @@ dummy_cols = [
     "Debtor",
 ]
 
+
+
 def plot_dummy_histograms(X,dummy_cols):
     """
     Plot histograms for multiple 0/1 dummy variables.
@@ -186,7 +176,7 @@ def plot_dummy_histograms(X,dummy_cols):
 
 
 
-def multicollinearity_corr_heatmap(df):
+def multicollinearity_corr_heatmap(df,output_dir="outputs"):
 
   """
   Computes the correlation matrix for all numeric columns
@@ -196,6 +186,8 @@ def multicollinearity_corr_heatmap(df):
   plt.figure(figsize=(12, 8))
   sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
   plt.title("Correlation Heatmap")
+  fig.savefig(os.path.join(output_dir, "correlation_heatmap.png"),
+                dpi=300, bbox_inches="tight")
   plt.show()
 
     

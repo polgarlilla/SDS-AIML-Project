@@ -100,7 +100,6 @@ evaluation_on_holdout(model_lasso, X_holdout, y_holdout,model_name="Lasso Logist
 print("\n=== KNN MODEL (Holdout) ===")
 evaluation_on_holdout(model_knn, X_holdout, y_holdout,model_name="KNN Classifier")
 
-
 print("\n=== DECISION TREE MODEL (Holdout) ===")
 evaluation_on_holdout(model_tree, X_holdout, y_holdout,model_name="Decision Tree Classifier")
 #based on accuracy, the decision tree performs best on the holdout set
